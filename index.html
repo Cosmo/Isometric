@@ -40,8 +40,6 @@
       }
       
       .tile {
-        background-repeat:    no-repeat;
-        background-position:  left top;
         width:                62px;
         height:               32px;
         position:             absolute;
@@ -50,23 +48,51 @@
         font-size:            11px;
         font-family:          "Helvetica Neue";
         color:                #333333;
-        overflow:             hidden;
+        /*
         text-indent:          -9999px;
+        */
       }
       
-      .floor {
+      .tile .inner {
+        position:             absolute;
+        left:                 0;
+        bottom:               0;
+        width:                62px;
+        height:               32px;
+        background-repeat:    no-repeat;
+        background-position:  left bottom;
+      }
+      
+      .floor .inner {
         background-image:     url("sprites/floor.png");
       }
       
-      .street {
+      .floor_2 .inner {
+        background-image:     url("sprites/floor_2.png");
+      }
+      
+      .street .inner {
         background-image:     url("sprites/street.png");
       }
       
-      .grass {
+      .street_1 .inner {
+        background-image:     url("sprites/street_1.png");
+      }
+      
+      .street_2 .inner {
+        background-image:     url("sprites/street_2.png");
+      }
+      
+      .grass .inner {
         background-image:     url("sprites/grass.png");
       }
       
-      .selected {
+      .cube .inner {
+        background-image:     url("sprites/cube.png");
+        height:               62px;
+      }
+      
+      .selected .inner {
         background-image:     url("sprites/selected.png") !important;
       }
     </style>

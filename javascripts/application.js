@@ -11,15 +11,15 @@ $(function(){
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,2,2,2,2,2,0,0,0,0,0,0,0,2,0,0],
-    [0,0,0,2,2,2,2,2,0,0,0,0,0,0,0,2,0,0],
-    [0,0,0,2,2,2,2,2,0,0,0,0,0,0,0,2,0,0],
-    [0,0,0,2,2,2,2,2,0,0,0,0,0,0,0,2,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,1,0,0],
+    [0,0,0,1,1,1,1,1,0,0,0,6,0,0,0,1,0,0],
+    [0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,1,0,0],
+    [0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,1,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -27,9 +27,19 @@ $(function(){
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
   ];
   
+  var mapTranslate = {
+    0: "floor",
+    1: "floor_2",
+    2: "street",
+    3: "street_1",
+    4: "street_2",
+    5: "grass",
+    6: "cube"
+  }
+  
   tileWidth       = 62;
-  tileWidthHalf   = tileWidth/2;
   tileHeight      = 32;
+  tileWidthHalf   = tileWidth/2;
   tileHeightHalf  = tileHeight/2;
   
   $("#map").css({ width: (map.length + 1) * tileWidth, height: ((map[0].length - 0.5) * tileHeight) });
@@ -41,16 +51,9 @@ $(function(){
     $(this).each(function(xIndex) {
       topValue = (yIndex * tileHeightHalf) - (xIndex * tileHeightHalf);
       leftValue = (xIndex * tileHeight) + (yIndex * tileHeight);
-      if(this == 0) {
-        sprite = "floor"
-      }
-      if(this == 1) {
-        sprite = "street"
-      }
-      if(this == 2) {
-        sprite = "grass"
-      }
-      tile = $("<div data-x='"+xIndex+"' data-y='"+yIndex+"'>y" + yIndex + ".x" + xIndex + "</div>").addClass("tile " + sprite)
+      sprite = mapTranslate[this];
+      inside = "<div class='inner'>y" + yIndex + ".x" + xIndex + "</div>";
+      tile = $("<div data-x='"+xIndex+"' data-y='"+yIndex+"'>"+inside+"</div>").addClass("tile " + sprite)
         .css({ top: topValue + offsetY, left: leftValue + offsetX });
       tile.appendTo("#map");
     });
@@ -59,11 +62,15 @@ $(function(){
   
   
   $(document).mousemove(function(event){
-    var element = document.elementFromPoint(event.pageX, event.pageY);
+    var element = $(document.elementFromPoint(event.pageX, event.pageY));
     $(".selected").removeClass("selected");
     
-    if($(element).hasClass("tile")) {
-      relativePositionOfElement = rPosition($(element), event.pageX, event.pageY);
+    if(!element.hasClass("tile")) {
+      element = element.closest(".tile");
+    }
+    
+    if(element.hasClass("tile")) {
+      relativePositionOfElement = rPosition(element, event.pageX, event.pageY);
       rPosX = relativePositionOfElement.x;
       rPosY = relativePositionOfElement.y;
 
@@ -84,8 +91,8 @@ $(function(){
           calcPercentValueY = (tileHeight - rPosY) / (15 / 100);
         }
       }
-
-
+      
+      
       if(rPosX > tileWidthHalf && rPosX <= tileWidth) {
         if(rPosY >= 0 && rPosY <= tileHeightHalf) {
           //console.log("right top");
@@ -100,21 +107,19 @@ $(function(){
           calcPercentValueY = (tileHeight - rPosY) / (15 / 100);
         }
       }
-
+      
       if(
         calcPercentValueX <= 100 && calcPercentValueY <= 100 &&
         calcPercentValueY <= (100 - calcPercentValueX)
       ) {
         // outside of tile
-        foundElement  = $(element);
-        foundX        = foundElement.data("x") + xIndexOffset;
-        foundY        = foundElement.data("y") + yIndexOffset;
+        foundX        = element.data("x") + xIndexOffset;
+        foundY        = element.data("y") + yIndexOffset;
         $(".tile[data-x="+foundX+"][data-y="+foundY+"]").addClass("selected");
-
+        
       }
       else {
-        foundElement  = $(element);
-        foundElement.addClass("selected");
+        element.addClass("selected");
       }
     }
     
