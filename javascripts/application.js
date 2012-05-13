@@ -44,13 +44,13 @@ $(function(){
   
   $("#map").css({ width: (map.length + 1) * tileWidth, height: ((map[0].length - 0.5) * tileHeight) });
   
-  offsetX = 0;
-  offsetY = (map[0].length * tileHeightHalf) - tileHeightHalf;
+  offsetX = (map.length * tileWidthHalf);
+  offsetY = 0;
   
   $(map).each(function(yIndex) {
     $(this).each(function(xIndex) {
-      topValue = (yIndex * tileHeightHalf) - (xIndex * tileHeightHalf);
-      leftValue = (xIndex * tileHeight) + (yIndex * tileHeight);
+      topValue = (yIndex * tileHeightHalf) + (xIndex * tileHeightHalf);
+      leftValue = (xIndex * tileHeight) - (yIndex * tileHeight);
       sprite = mapTranslate[this];
       inside = "<div class='inner'>y" + yIndex + ".x" + xIndex + "</div>";
       tile = $("<div data-x='"+xIndex+"' data-y='"+yIndex+"'>"+inside+"</div>").addClass("tile " + sprite)
